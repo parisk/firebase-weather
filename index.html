@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf8" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+		<script src="bower_components/firebase/firebase.js"></script>
+		<script src="bower_components/jquery/dist/jquery.min.js"></script>
+		<style>
+			#value::after {
+				content: " °F";
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Live weather info</h1>
+			<table class="cities table">
+				<tbody></tbody>
+				<thead>
+					<th>City</th>
+					<th>Temperature</th>
+				</thead>
+			</table>
+			<div></div>
+		</div>
+		<script>
+			var cities = {
+						'sanfrancisco': 'San Francisco',
+						'austin': 'Austin',
+						'newyork': 'New York',
+						'chicago': 'Chicago',
+						'seattle': 'Seattle'
+					},
+					watchers = {};
+
+			Object.keys(cities).forEach(function (city) {
+				var name = cities[city],
+						watcher = new Firebase('https://publicdata-weather.firebaseio.com/' + city + '/currently');
+
+				/* Insert a new row in the cities table. */
+				$('.cities tbody').append('<tr class="' + city + '" ><td class="name" >' + name + '</td><td class="temperature" ></td></tr>')
+
+				watcher.child('temperature').on('value', function(snapshot) {
+					var temperature = snapshot.val();
+					$('.cities .' + city + ' .temperature').text(temperature);
+				});
+
+				/* Save current weather watcher in "watchers" dictionary. */
+				watchers[city] = watcher;
+			});
+		</script>
+	</body>
+</html>
