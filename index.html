@@ -4,6 +4,7 @@
 		<meta charset="utf8" />
 		<title></title>
 		<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="main.css" />
 		<script src="bower_components/firebase/firebase.js"></script>
 		<script src="bower_components/jquery/dist/jquery.min.js"></script>
 		<style>
@@ -22,7 +23,9 @@
 					<th>Temperature</th>
 				</thead>
 			</table>
-			<div></div>
+			<div class="alert alert-info" role="alert">
+				Weather updates in real time using Firebase.
+			</div>
 		</div>
 		<script>
 			var cities = {
@@ -42,8 +45,19 @@
 				$('.cities tbody').append('<tr class="' + city + '" ><td class="name" >' + name + '</td><td class="temperature" ></td></tr>')
 
 				watcher.child('temperature').on('value', function(snapshot) {
-					var temperature = snapshot.val();
-					$('.cities .' + city + ' .temperature').text(temperature);
+					var temperature = snapshot.val(),
+							$row = $('.cities .' + city);
+
+					$row.find('.temperature').text(temperature);
+
+					/* Highlight value update. */
+					$row.addClass('info');
+
+					/* Remove highlighting after 3 seconds. */
+					setTimeout(function () {
+						$row.removeClass('info');
+					}, 3000);
+
 				});
 
 				/* Save current weather watcher in "watchers" dictionary. */
